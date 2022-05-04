@@ -64,9 +64,12 @@ extension Move {
     // top leading is 0, 0
     // if the same move is returned, than stop all
     var nextClockWiseMove: Move {
+        let debug = false
         var newMove = self
         
-        NSLog("nextClockWiseMove: \(rowColumn), moving \(direction)")
+        if debug {
+            NSLog("nextClockWiseMove: \(rowColumn), moving \(direction)")
+        }
         switch direction {
         case .up:
             if canMoveUp {
@@ -80,7 +83,9 @@ extension Move {
                     newMove.column = newMove.minColumns
                     newMove.direction = .right
 
-                    NSLog("nextClockWiseMove: \(newMove.rowColumn), moving \(newMove.direction)")
+                    if debug {
+                        NSLog("nextClockWiseMove: \(newMove.rowColumn), moving \(newMove.direction)")
+                    }
                     if newMove.column >= newMove.maxColumns {
                         // there is no room to go right
                         newMove = self
@@ -121,7 +126,9 @@ extension Move {
         if self == newMove {
             NSLog("nextClockWiseMove: \(self.rowColumn), unable to move ...")
         } else {
-            NSLog("nextClockWiseMove: \(self.rowColumn), moved \(newMove.direction) to: \(newMove.rowColumn)")
+            if debug {
+                NSLog("nextClockWiseMove: \(self.rowColumn), moved \(newMove.direction) to: \(newMove.rowColumn)")
+            }
         }
         return newMove
     }

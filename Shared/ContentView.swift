@@ -243,7 +243,6 @@ struct GridView: View {
                 }
             }
         }
-        .drawingGroup()
         .padding(.all, 6)
         .border(Color.gray)
     }
@@ -328,6 +327,7 @@ struct ContentView: View {
                     }
                 }
             }
+            .drawingGroup()
 
             Spacer()
             VStack {
