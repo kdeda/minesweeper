@@ -58,20 +58,22 @@ fileprivate extension Array where Element == Cell {
 }
 
 final class GridViewModel: ObservableObject {
-    static var rows = 5
-    static var columns = 7
-    static var cellSize: CGFloat = 32
+    static var cellSize: CGFloat = 24
 
+    var rows = 3
+    var columns = 4
     @Published var cells: [[Cell]] = [[Cell]]()
+    @Published var clockWiseError = ""
     var cancellables = Set<AnyCancellable>()
 
-    init() {
-        let newCells = (0 ..< Self.rows).map { row in
-            (0 ..< Self.columns).map { column in
+    init(rows: Int = 3, columns: Int = 4) {
+        self.rows = rows
+        self.columns = columns
+        self.cells = (0 ..< rows).map { row in
+            (0 ..< columns).map { column in
                 Cell(row: row, column: column)
             }
         }
-        self.cells = newCells
     }
     
     
@@ -79,6 +81,7 @@ final class GridViewModel: ObservableObject {
     func reset() {
         cancellables.forEach { $0.cancel() }
         
+        self.clockWiseError = ""
         self.cells
             .flatMap { $0 }
             .forEach { cell in
@@ -96,8 +99,8 @@ final class GridViewModel: ObservableObject {
         let cornerCells = cells
             .flatMap { $0 }
             .compactMap { cell -> Cell? in
-                let cornerRow = cell.row == 0 || cell.row == Self.rows - 1
-                let cornerColumn = cell.column == 0 || cell.column == Self.columns - 1
+                let cornerRow = cell.row == 0 || cell.row == rows - 1
+                let cornerColumn = cell.column == 0 || cell.column == columns - 1
                 
                 guard cornerRow && cornerColumn
                 else { return nil }
@@ -114,10 +117,10 @@ final class GridViewModel: ObservableObject {
     
     // 1) reset all to gray
     // 2) start at 0.0 and go clockwise
-    func clockWise() {
+    func clockWise(fps: Int = 6) {
         reset()
 
-        var currentMove = Move(minRows: 0, maxRows: Self.rows, minColumns: 0, maxColumns: Self.columns, row: 0, column: 0, direction: .right)
+        var currentMove = Move(minRows: 0, maxRows: rows, minColumns: 0, maxColumns: columns, row: 0, column: 0, direction: .right)
         var orderedCells = [self.cells[currentMove.row][currentMove.column]]
         var working = true
         repeat {
@@ -134,7 +137,11 @@ final class GridViewModel: ObservableObject {
             }
         } while working
 
-        orderedCells.animateChanges(fps: 6) { cell in
+        if rows * columns != orderedCells.count {
+            clockWiseError = "expected: \(rows * columns) and got: \(orderedCells.count)"
+        }
+        // clockWiseError = "expected: \(rows * columns) and got: \(orderedCells.count)"
+        orderedCells.animateChanges(fps: fps) { cell in
             self.cells[cell.row][cell.column].rotation += 90.0
             self.cells[cell.row][cell.column].color = Color.yellow
         }
@@ -198,15 +205,78 @@ struct CellView: View {
             // .cornerRadius(cornerRadius)
             
             Text("\(cell.row),\(cell.column)")
-                .foregroundColor(.secondary)
+                .font(.caption2)
+                .foregroundColor(.white)
         }
         .frame(width: GridViewModel.cellSize, height: GridViewModel.cellSize)
     }
 }
 
+struct GridView: View {
+    @ObservedObject var viewModel: GridViewModel
+
+    var body: some View {
+        VStack(spacing: 1) {
+            VStack(spacing: 1) {
+                Text("\(viewModel.rows) by \(viewModel.columns)")
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .padding(.bottom, 6)
+                
+                ForEach(0 ..< viewModel.cells.count, id: \.self) { row in
+                    HStack(spacing: 1) {
+                        ForEach(0 ..< viewModel.cells[row].count, id: \.self) { column in
+                            CellView(cell: viewModel.cells[row][column])
+                        }
+                    }
+                }
+
+                HStack(spacing: 2) {
+                    Text(Image(systemName: "checkmark.circle.fill"))
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(viewModel.clockWiseError.isEmpty ? Color.green : Color.red)
+                    Text(viewModel.clockWiseError.isEmpty ? "Passed" : "\(viewModel.clockWiseError)")
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundColor(viewModel.clockWiseError.isEmpty ? Color.green : Color.red)
+                }
+            }
+        }
+        .drawingGroup()
+        .padding(.all, 6)
+        .border(Color.gray)
+    }
+}
+
 struct ContentView: View {
-    @ObservedObject var viewModel = GridViewModel()
+    @State var fps: Double = 6.0
     
+    @ObservedObject var viewModel1by3 = GridViewModel(rows: 1, columns: 3)
+    @ObservedObject var viewModel2by3 = GridViewModel(rows: 2, columns: 3)
+    @ObservedObject var viewModel3by3 = GridViewModel(rows: 3, columns: 3)
+    @ObservedObject var viewModel3by1 = GridViewModel(rows: 3, columns: 1)
+    @ObservedObject var viewModel3by2 = GridViewModel(rows: 3, columns: 2)
+    @ObservedObject var viewModel3by4 = GridViewModel(rows: 3, columns: 4)
+    @ObservedObject var viewModel3by5 = GridViewModel(rows: 3, columns: 5)
+    @ObservedObject var viewModel13by17 = GridViewModel(rows: 13, columns: 17)
+
+    var viewModels: [[GridViewModel]] {
+        [
+            [viewModel1by3, viewModel2by3, viewModel3by3, viewModel3by1],
+            [viewModel3by2, viewModel3by4, viewModel3by5],
+            [viewModel13by17]
+        ]
+    }
+    
+//    @ObservedObject var viewModel13by15 = GridViewModel(rows: 2, columns: 3)
+//
+//    var viewModels: [[GridViewModel]] {
+//        [
+//            [viewModel13by15]
+//        ]
+//    }
+
     var body: some View {
         // NSLog("body")
         return VStack {
@@ -214,7 +284,9 @@ struct ContentView: View {
                 Spacer()
                 Button(action: {
                     withAnimation {
-                        viewModel.clockWise()
+                        viewModels
+                            .flatMap { $0 }
+                            .forEach { $0.clockWise(fps: Int(fps)) }
                     }
                 }, label: {
                     Text("Clock Wise")
@@ -223,7 +295,9 @@ struct ContentView: View {
                     .frame(height: 12)
                 Button(action: {
                     withAnimation {
-                        viewModel.flipCorners()
+                        viewModels
+                            .flatMap { $0 }
+                            .forEach { $0.flipCorners() }
                     }
                 }, label: {
                     Text("Flip Corners")
@@ -232,7 +306,9 @@ struct ContentView: View {
                     .frame(height: 12)
                 Button(action: {
                     withAnimation {
-                        viewModel.reset()
+                        viewModels
+                            .flatMap { $0 }
+                            .forEach { $0.reset() }
                     }
                 }, label: {
                     Text("Reset")
@@ -244,17 +320,31 @@ struct ContentView: View {
             Spacer()
 
             VStack(spacing: 1) {
-                ForEach(0 ..< GridViewModel.rows, id: \.self) { row in
+                ForEach(0 ..< viewModels.count, id: \.self) { row in
                     HStack(spacing: 1) {
-                        ForEach(0 ..< GridViewModel.columns, id: \.self) { column in
-                            CellView(cell: self.viewModel.cells[row][column])
+                        ForEach(0 ..< viewModels[row].count, id: \.self) { column in
+                            GridView(viewModel: viewModels[row][column])
                         }
                     }
                 }
             }
-            .drawingGroup()
-            .padding()
-            
+
+            Spacer()
+            VStack {
+                HStack {
+                    Text("Render frames per second: \(Int(fps))")
+                }
+                Slider(value: $fps, in: 3.0 ... 120.0, step: 3) {
+                    Text("Label") // Where is this displayed ???
+                } minimumValueLabel: {
+                    Image(systemName: "tortoise")
+                } maximumValueLabel: {
+                    Image(systemName: "hare")
+                } onEditingChanged: {
+                    print("\($0)")
+                }
+            }
+            .padding(.horizontal, 24)
             Spacer()
         }
     }

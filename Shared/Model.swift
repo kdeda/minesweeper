@@ -15,16 +15,39 @@ enum Direction {
 }
 
 struct Move: Equatable {
+    // bounding box
     var minRows: Int
     var maxRows: Int
     var minColumns: Int
     var maxColumns: Int
+    
+    // current position and direction in it
     var row: Int
     var column: Int
     var direction: Direction
 }
 
 extension Move {
+    var rowColumn: String {
+        return String(format: "[%2d, %2d]", row, column)
+    }
+    var debugString: String {
+        return "\(rowColumn), direction: \(direction)"
+    }
+
+    var canMoveRight: Bool {
+        (column + 1) < maxColumns
+    }
+    var canMoveLeft: Bool {
+        (column - 1) >= minColumns
+    }
+    var canMoveUp: Bool {
+        (row - 1) > minRows
+    }
+    var canMoveDown: Bool {
+        (row + 1) < maxRows
+    }
+
     // return an inset Move
     var inset: Move {
         var newMove = self
@@ -43,9 +66,10 @@ extension Move {
     var nextClockWiseMove: Move {
         var newMove = self
         
+        NSLog("nextClockWiseMove: \(rowColumn), moving \(direction)")
         switch direction {
         case .up:
-            if (row - 1) > minRows {
+            if canMoveUp {
                 // we can still move up
                 newMove.row -= 1
             } else {
@@ -56,7 +80,7 @@ extension Move {
                     newMove.column = newMove.minColumns
                     newMove.direction = .right
 
-                    NSLog("newMove: \(newMove)")
+                    NSLog("nextClockWiseMove: \(newMove.rowColumn), moving \(newMove.direction)")
                     if newMove.column >= newMove.maxColumns {
                         // there is no room to go right
                         newMove = self
@@ -65,33 +89,39 @@ extension Move {
             }
             
         case .down:
-            if (row + 1) < maxRows {
+            if canMoveDown {
                 // we can still move down
                 newMove.row += 1
-            } else if column > minColumns {
+            } else if canMoveLeft {
                 // there is room to go left
                 newMove.direction = .left
                 newMove = newMove.nextClockWiseMove
             }
             
         case .left:
-            if (column - 1) >= minColumns {
+            if canMoveLeft {
                 newMove.column -= 1
-            } else if (row - 1) > minRows {
+            } else if canMoveUp {
                 // there is room to go up
                 newMove.direction = .up
                 newMove = newMove.nextClockWiseMove
             }
             
         case .right:
-            if (column + 1) < maxColumns {
+            if canMoveRight {
                 // we can still move right
                 newMove.column += 1
-            } else if row < maxRows {
+            } else if canMoveDown {
                 // there is room to go down
                 newMove.direction = .down
                 newMove = newMove.nextClockWiseMove
             }
+        }
+        
+        if self == newMove {
+            NSLog("nextClockWiseMove: \(self.rowColumn), unable to move ...")
+        } else {
+            NSLog("nextClockWiseMove: \(self.rowColumn), moved \(newMove.direction) to: \(newMove.rowColumn)")
         }
         return newMove
     }
