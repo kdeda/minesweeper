@@ -390,9 +390,9 @@ struct ContentView: View {
 
             Spacer()
 
-            VStack(spacing: 1) {
+            VStack(spacing: 6) {
                 ForEach(0 ..< viewModels.count, id: \.self) { row in
-                    HStack(spacing: 1) {
+                    HStack(spacing: 6) {
                         ForEach(0 ..< viewModels[row].count, id: \.self) { column in
                             GridView(viewModel: viewModels[row][column])
                         }
