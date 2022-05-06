@@ -282,11 +282,11 @@ struct CellViewV2: View {
     }
 }
 
-struct GridView: View {
+struct GridViewV2: View {
     @ObservedObject var viewModel: GridViewModel
 
     var body: some View {
-        NSLog("GridView.body rows:\(viewModel.rows) columns: \(viewModel.columns)")
+        NSLog("GridViewV2.body rows:\(viewModel.rows) columns: \(viewModel.columns)")
         return VStack(spacing: 1) {
             VStack(spacing: 1) {
                 Text("\(viewModel.rows) by \(viewModel.columns)")
@@ -394,7 +394,7 @@ struct ContentViewV2: View {
                 ForEach(0 ..< viewModels.count, id: \.self) { row in
                     HStack(spacing: 6) {
                         ForEach(0 ..< viewModels[row].count, id: \.self) { column in
-                            GridView(viewModel: viewModels[row][column])
+                            GridViewV2(viewModel: viewModels[row][column])
                         }
                     }
                 }

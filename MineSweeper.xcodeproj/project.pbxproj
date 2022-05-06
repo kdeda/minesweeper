@@ -11,6 +11,16 @@
 		FB1442852821A4400020CBBB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1442832821A4400020CBBB /* Model.swift */; };
 		FB72F2CB282508DD00A7BF36 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = FB72F2CA282508DD00A7BF36 /* ComposableArchitecture */; };
 		FB72F2CE282508F000A7BF36 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = FB72F2CD282508F000A7BF36 /* ComposableArchitecture */; };
+		FB72F2D028250B2E00A7BF36 /* GridState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2CF28250B2E00A7BF36 /* GridState.swift */; };
+		FB72F2D128250B2E00A7BF36 /* GridState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2CF28250B2E00A7BF36 /* GridState.swift */; };
+		FB72F2D528250B5700A7BF36 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2D428250B5700A7BF36 /* GridView.swift */; };
+		FB72F2D628250B5800A7BF36 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2D428250B5700A7BF36 /* GridView.swift */; };
+		FB72F2D828250CCF00A7BF36 /* Grid+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2D728250CCF00A7BF36 /* Grid+Model.swift */; };
+		FB72F2D928250CCF00A7BF36 /* Grid+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2D728250CCF00A7BF36 /* Grid+Model.swift */; };
+		FB72F2DC2825155500A7BF36 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2DB2825155500A7BF36 /* AppState.swift */; };
+		FB72F2DD2825155500A7BF36 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2DB2825155500A7BF36 /* AppState.swift */; };
+		FB72F2DF2825156300A7BF36 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2DE2825156300A7BF36 /* AppView.swift */; };
+		FB72F2E02825156300A7BF36 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB72F2DE2825156300A7BF36 /* AppView.swift */; };
 		FBFE8EA5281EE6180071AB38 /* MineSweeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFE8E95281EE6170071AB38 /* MineSweeperApp.swift */; };
 		FBFE8EA6281EE6180071AB38 /* MineSweeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFE8E95281EE6170071AB38 /* MineSweeperApp.swift */; };
 		FBFE8EA7281EE6180071AB38 /* ContentViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFE8E96281EE6170071AB38 /* ContentViewV2.swift */; };
@@ -23,6 +33,11 @@
 
 /* Begin PBXFileReference section */
 		FB1442832821A4400020CBBB /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		FB72F2CF28250B2E00A7BF36 /* GridState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridState.swift; sourceTree = "<group>"; };
+		FB72F2D428250B5700A7BF36 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
+		FB72F2D728250CCF00A7BF36 /* Grid+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Grid+Model.swift"; sourceTree = "<group>"; };
+		FB72F2DB2825155500A7BF36 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		FB72F2DE2825156300A7BF36 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		FBFE8E95281EE6170071AB38 /* MineSweeperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineSweeperApp.swift; sourceTree = "<group>"; };
 		FBFE8E96281EE6170071AB38 /* ContentViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewV2.swift; sourceTree = "<group>"; };
 		FBFE8E97281EE6180071AB38 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -52,6 +67,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FB72F2D228250B3800A7BF36 /* Grid */ = {
+			isa = PBXGroup;
+			children = (
+				FB72F2CF28250B2E00A7BF36 /* GridState.swift */,
+				FB72F2D428250B5700A7BF36 /* GridView.swift */,
+				FB72F2D728250CCF00A7BF36 /* Grid+Model.swift */,
+			);
+			path = Grid;
+			sourceTree = "<group>";
+		};
+		FB72F2D328250B4400A7BF36 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				FB72F2DA2825153E00A7BF36 /* App */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		FB72F2DA2825153E00A7BF36 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FB72F2DB2825155500A7BF36 /* AppState.swift */,
+				FB72F2DE2825156300A7BF36 /* AppView.swift */,
+				FB72F2D228250B3800A7BF36 /* Grid */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 		FBFE8E8F281EE6170071AB38 = {
 			isa = PBXGroup;
 			children = (
@@ -65,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				FBFE8E95281EE6170071AB38 /* MineSweeperApp.swift */,
+				FB72F2D328250B4400A7BF36 /* Features */,
 				FB1442832821A4400020CBBB /* Model.swift */,
 				FBFE8EB3281EEF1E0071AB38 /* ContentViewV1.swift */,
 				FBFE8E96281EE6170071AB38 /* ContentViewV2.swift */,
@@ -199,8 +243,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBFE8EA7281EE6180071AB38 /* ContentViewV2.swift in Sources */,
+				FB72F2D828250CCF00A7BF36 /* Grid+Model.swift in Sources */,
+				FB72F2DF2825156300A7BF36 /* AppView.swift in Sources */,
 				FBFE8EA5281EE6180071AB38 /* MineSweeperApp.swift in Sources */,
+				FB72F2DC2825155500A7BF36 /* AppState.swift in Sources */,
 				FBFE8EB4281EEF1E0071AB38 /* ContentViewV1.swift in Sources */,
+				FB72F2D028250B2E00A7BF36 /* GridState.swift in Sources */,
+				FB72F2D528250B5700A7BF36 /* GridView.swift in Sources */,
 				FB1442842821A4400020CBBB /* Model.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -210,8 +259,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBFE8EA8281EE6180071AB38 /* ContentViewV2.swift in Sources */,
+				FB72F2D928250CCF00A7BF36 /* Grid+Model.swift in Sources */,
+				FB72F2E02825156300A7BF36 /* AppView.swift in Sources */,
 				FBFE8EA6281EE6180071AB38 /* MineSweeperApp.swift in Sources */,
+				FB72F2DD2825155500A7BF36 /* AppState.swift in Sources */,
 				FBFE8EB5281EEF1E0071AB38 /* ContentViewV1.swift in Sources */,
+				FB72F2D128250B2E00A7BF36 /* GridState.swift in Sources */,
+				FB72F2D628250B5800A7BF36 /* GridView.swift in Sources */,
 				FB1442852821A4400020CBBB /* Model.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

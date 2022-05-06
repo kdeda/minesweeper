@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct MineSweeperApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentViewV2()
+            AppView(store: GridState.liveStore)
+//            ContentViewV2()
 //            ContentViewV1()
         }
     }
