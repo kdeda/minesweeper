@@ -11,7 +11,7 @@ import SwiftUI
 import Combine
 import ComposableArchitecture
 
-final class Cell: ObservableObject {
+final class CellV2: ObservableObject {
     struct CellData {
         var row: Int
         var column: Int
@@ -45,31 +45,31 @@ final class Cell: ObservableObject {
     }
 }
 
-extension Cell: CustomStringConvertible {
+extension CellV2: CustomStringConvertible {
     var description: String {
         let rowColumn = String(format: "[%2d, %2d]", row, column)
         return "\(rowColumn), rotation: \(rotation), color: \(color)"
     }
 }
 
-extension Cell: Identifiable {
+extension CellV2: Identifiable {
     var id: Int {
         row  * 1000 + column
     }
 }
 
-fileprivate extension Array where Element == Cell {
+fileprivate extension Array where Element == CellV2 {
     // because this is a pipeline, running in the main thread
     // as soon as we map we will end up calling
     // .sink which will publish our state and than we will wait for the ui to finish the reload
     // so even though this design might be cool in theory in reality the ui display will mess up the timers
     // and we will lag
-    func animateChangesV1(fps: Int = 30) -> AnyPublisher<Cell.CellData, Never> {
+    func animateChangesV1(fps: Int = 30) -> AnyPublisher<CellV2.CellData, Never> {
         let publisher = self
             .publisher
             .map(\.cellData)
             .zip(Timer.publish(every: 1.0 / Double(fps), on: RunLoop.main, in: .common).autoconnect())
-            .map { cellData, _ -> Cell.CellData in
+            .map { cellData, _ -> CellV2.CellData in
                 var newValue = cellData
                 
                 newValue.rotation += 90.0
@@ -83,7 +83,7 @@ fileprivate extension Array where Element == Cell {
     // attempting to play with timing
     // we do the work to fast but how do we make sure the screen is updated fast enought ?
     //
-    func animateChanges(fps: Int = 30) -> AnyPublisher<[Cell.CellData], Never> {
+    func animateChanges(fps: Int = 30) -> AnyPublisher<[CellV2.CellData], Never> {
         let frequency = 2
         let chunks = fps > frequency
         ? Int(fps / frequency)
@@ -102,7 +102,7 @@ fileprivate extension Array where Element == Cell {
             .map(\.cellData)
             .collect(chunks)
             .zip(timer)
-            .map { cellDatas, _ -> [Cell.CellData] in
+            .map { cellDatas, _ -> [CellV2.CellData] in
                 NSLog("animateChanges(fps: \(fps)) cell: \(cellDatas[0].row),\(cellDatas[0].column)")
                 
                 return cellDatas.map { cellData in
@@ -124,7 +124,7 @@ final class GridViewModel: ObservableObject {
 
     var rows = 3
     var columns = 4
-    @Published var cells: [[Cell]] = [[Cell]]()
+    @Published var cells: [[CellV2]] = [[CellV2]]()
     @Published var clockWiseError = ""
     var cancellables = Set<AnyCancellable>()
 
@@ -133,7 +133,7 @@ final class GridViewModel: ObservableObject {
         self.columns = columns
         self.cells = (0 ..< rows).map { row in
             (0 ..< columns).map { column in
-                Cell(row: row, column: column)
+                CellV2(row: row, column: column)
             }
         }
     }
@@ -160,7 +160,7 @@ final class GridViewModel: ObservableObject {
 
         let cornerCells = cells
             .flatMap { $0 }
-            .compactMap { cell -> Cell? in
+            .compactMap { cell -> CellV2? in
                 let cornerRow = cell.row == 0 || cell.row == rows - 1
                 let cornerColumn = cell.column == 0 || cell.column == columns - 1
                 
@@ -218,20 +218,20 @@ final class GridViewModel: ObservableObject {
     }
 }
 
-struct CellView: View {
-    @ObservedObject var cell: Cell
+struct CellViewV2: View {
+    @ObservedObject var cell: CellV2
     @State private var rotation: CGFloat = 0.0
     @State private var cellSize: CGFloat = GridViewModel.cellSize
     @State private var cornerRadius: CGFloat = 0.0
 
-    init(cell: Cell) {
+    init(cell: CellV2) {
         self.cell = cell
         // start with the current cell rotation
         self.rotation = cell.rotation
     }
     
     var body: some View {
-        NSLog("CellView.body cell \(cell.row),\(cell.column)")
+        NSLog("CellViewV2.body cell \(cell.row),\(cell.column)")
         
         // NSLog("rotation: \(rotation), cell: \(cell)")
         //    if cell.row == 2 && cell.column == 2 {
@@ -297,7 +297,7 @@ struct GridView: View {
                 ForEach(0 ..< viewModel.cells.count, id: \.self) { row in
                     HStack(spacing: 1) {
                         ForEach(0 ..< viewModel.cells[row].count, id: \.self) { column in
-                            CellView(cell: viewModel.cells[row][column])
+                            CellViewV2(cell: viewModel.cells[row][column])
                         }
                     }
                 }
@@ -320,7 +320,7 @@ struct GridView: View {
     }
 }
 
-struct ContentView: View {
+struct ContentViewV2: View {
     @State var fps: Double = 6.0
     
     @ObservedObject var viewModel1by3 = GridViewModel(rows: 1, columns: 3)
@@ -422,8 +422,8 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct ContentViewV2_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentViewV2()
     }
 }
