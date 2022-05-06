@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		FB1442842821A4400020CBBB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1442832821A4400020CBBB /* Model.swift */; };
 		FB1442852821A4400020CBBB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1442832821A4400020CBBB /* Model.swift */; };
+		FB72F2CB282508DD00A7BF36 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = FB72F2CA282508DD00A7BF36 /* ComposableArchitecture */; };
+		FB72F2CE282508F000A7BF36 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = FB72F2CD282508F000A7BF36 /* ComposableArchitecture */; };
 		FBFE8EA5281EE6180071AB38 /* MineSweeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFE8E95281EE6170071AB38 /* MineSweeperApp.swift */; };
 		FBFE8EA6281EE6180071AB38 /* MineSweeperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFE8E95281EE6170071AB38 /* MineSweeperApp.swift */; };
 		FBFE8EA7281EE6180071AB38 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFE8E96281EE6170071AB38 /* ContentView.swift */; };
@@ -35,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB72F2CB282508DD00A7BF36 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB72F2CE282508F000A7BF36 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +106,9 @@
 			dependencies = (
 			);
 			name = "MineSweeper (iOS)";
+			packageProductDependencies = (
+				FB72F2CA282508DD00A7BF36 /* ComposableArchitecture */,
+			);
 			productName = "MineSweeper (iOS)";
 			productReference = FBFE8E9C281EE6180071AB38 /* MineSweeper.app */;
 			productType = "com.apple.product-type.application";
@@ -119,6 +126,9 @@
 			dependencies = (
 			);
 			name = "MineSweeper (macOS)";
+			packageProductDependencies = (
+				FB72F2CD282508F000A7BF36 /* ComposableArchitecture */,
+			);
 			productName = "MineSweeper (macOS)";
 			productReference = FBFE8EA2281EE6180071AB38 /* MineSweeper.app */;
 			productType = "com.apple.product-type.application";
@@ -150,6 +160,10 @@
 				Base,
 			);
 			mainGroup = FBFE8E8F281EE6170071AB38;
+			packageReferences = (
+				FB72F2C9282508DD00A7BF36 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				FB72F2CC282508F000A7BF36 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			productRefGroup = FBFE8E9D281EE6180071AB38 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -462,6 +476,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FB72F2C9282508DD00A7BF36 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.30.0;
+			};
+		};
+		FB72F2CC282508F000A7BF36 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FB72F2CA282508DD00A7BF36 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB72F2C9282508DD00A7BF36 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		FB72F2CD282508F000A7BF36 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB72F2CC282508F000A7BF36 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FBFE8E90281EE6170071AB38 /* Project object */;
 }

@@ -9,8 +9,25 @@
 
 import SwiftUI
 import Combine
+import ComposableArchitecture
 
 final class Cell: ObservableObject {
+    struct CellData {
+        var row: Int
+        var column: Int
+        var rotation: CGFloat = 0.0
+        var color = Color.gray
+    }
+    var cellData: CellData {
+        get {
+            return CellData(row: row, column: column, rotation: rotation, color: color)
+        }
+        set {
+            rotation = newValue.rotation
+            color = newValue.color
+            // objectWillChange.send()
+        }
+    }
     var row: Int
     var column: Int
     @Published var rotation: CGFloat = 0.0
@@ -42,17 +59,62 @@ extension Cell: Identifiable {
 }
 
 fileprivate extension Array where Element == Cell {
-    func animateChanges(fps: Int = 30, _ cellChange: @escaping (Cell) -> Void) -> AnyCancellable {
+    // because this is a pipeline, running in the main thread
+    // as soon as we map we will end up calling
+    // .sink which will publish our state and than we will wait for the ui to finish the reload
+    // so even though this design might be cool in theory in reality the ui display will mess up the timers
+    // and we will lag
+    func animateChangesV1(fps: Int = 30) -> AnyPublisher<Cell.CellData, Never> {
         let publisher = self
             .publisher
+            .map(\.cellData)
             .zip(Timer.publish(every: 1.0 / Double(fps), on: RunLoop.main, in: .common).autoconnect())
-            .map { cell, _ in
-                cell
+            .map { cellData, _ -> Cell.CellData in
+                var newValue = cellData
+                
+                newValue.rotation += 90.0
+                newValue.color = Color.yellow
+                return newValue
             }
-            .sink(receiveValue: { cell in
-                // NSLog("row: \(cell.row), column: \(cell.column)")
-                cellChange(cell)
-            })
+            .eraseToAnyPublisher()
+        return publisher
+    }
+    
+    // attempting to play with timing
+    // we do the work to fast but how do we make sure the screen is updated fast enought ?
+    //
+    func animateChanges(fps: Int = 30) -> AnyPublisher<[Cell.CellData], Never> {
+        let frequency = 2
+        let chunks = fps > frequency
+        ? Int(fps / frequency)
+        : fps
+        
+        let timer = Publishers.Timer(
+            every: .seconds(1.0 / Double(frequency)),
+            tolerance: nil,
+            scheduler: DispatchQueue.global().eraseToAnyScheduler(),
+            options: nil
+        )
+            .autoconnect()
+
+        let publisher = self
+            .publisher
+            .map(\.cellData)
+            .collect(chunks)
+            .zip(timer)
+            .map { cellDatas, _ -> [Cell.CellData] in
+                NSLog("animateChanges(fps: \(fps)) cell: \(cellDatas[0].row),\(cellDatas[0].column)")
+                
+                return cellDatas.map { cellData in
+                    var newValue = cellData
+                    
+                    newValue.rotation += 90.0
+                    newValue.color = Color.yellow
+                    return newValue
+                }
+            }
+            .subscribe(on: DispatchQueue.global().eraseToAnyScheduler())
+            .eraseToAnyPublisher()
         return publisher
     }
 }
@@ -107,11 +169,10 @@ final class GridViewModel: ObservableObject {
                 return cell
             }
 
-        cornerCells.animateChanges(fps: 30) { cell in
-            self.cells[cell.row][cell.column].rotation += 90.0
-            self.cells[cell.row][cell.column].color = Color.yellow
-            // self.objectWillChange.send()
-        }
+        cornerCells.animateChangesV1(fps: 30)
+            .sink(receiveValue: { cellData in
+                self.cells[cellData.row][cellData.column].cellData = cellData
+            })
         .store(in: &cancellables)
     }
     
@@ -141,10 +202,18 @@ final class GridViewModel: ObservableObject {
             clockWiseError = "expected: \(rows * columns) and got: \(orderedCells.count)"
         }
         // clockWiseError = "expected: \(rows * columns) and got: \(orderedCells.count)"
-        orderedCells.animateChanges(fps: fps) { cell in
-            self.cells[cell.row][cell.column].rotation += 90.0
-            self.cells[cell.row][cell.column].color = Color.yellow
-        }
+        orderedCells.animateChangesV1(fps: fps)
+            .sink(receiveValue: { cellData in
+                self.cells[cellData.row][cellData.column].cellData = cellData
+            })
+
+//        orderedCells.animateChanges(fps: fps)
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveValue: { cellDatas in
+//                cellDatas.forEach { cellData in
+//                    self.cells[cellData.row][cellData.column].cellData = cellData
+//                }
+//            })
         .store(in: &cancellables)
     }
 }
@@ -162,7 +231,8 @@ struct CellView: View {
     }
     
     var body: some View {
-        // NSLog("row: \(cell.row), column: \(cell.column)")
+        NSLog("CellView.body cell \(cell.row),\(cell.column)")
+        
         // NSLog("rotation: \(rotation), cell: \(cell)")
         //    if cell.row == 2 && cell.column == 2 {
         //        NSLog("body rotation: \(rotation), cell: \(cell)")
@@ -216,7 +286,8 @@ struct GridView: View {
     @ObservedObject var viewModel: GridViewModel
 
     var body: some View {
-        VStack(spacing: 1) {
+        NSLog("GridView.body rows:\(viewModel.rows) columns: \(viewModel.columns)")
+        return VStack(spacing: 1) {
             VStack(spacing: 1) {
                 Text("\(viewModel.rows) by \(viewModel.columns)")
                     .font(.caption2)
@@ -243,6 +314,7 @@ struct GridView: View {
                 }
             }
         }
+        .drawingGroup()
         .padding(.all, 6)
         .border(Color.gray)
     }
