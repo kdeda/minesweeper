@@ -11,14 +11,16 @@
 		9734F20E2828219900332E43 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F20C2828219900332E43 /* AppView.swift */; };
 		9734F212282821C200332E43 /* GridState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F211282821C200332E43 /* GridState.swift */; };
 		9734F213282821C200332E43 /* GridState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F211282821C200332E43 /* GridState.swift */; };
-		9734F215282821C600332E43 /* GridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F214282821C600332E43 /* GridCell.swift */; };
-		9734F216282821C600332E43 /* GridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F214282821C600332E43 /* GridCell.swift */; };
+		9734F215282821C600332E43 /* GridCellState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F214282821C600332E43 /* GridCellState.swift */; };
+		9734F216282821C600332E43 /* GridCellState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F214282821C600332E43 /* GridCellState.swift */; };
 		9734F218282821CB00332E43 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F217282821CB00332E43 /* GridView.swift */; };
 		9734F219282821CB00332E43 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F217282821CB00332E43 /* GridView.swift */; };
 		9734F21D282821EC00332E43 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F21C282821EC00332E43 /* Move.swift */; };
 		9734F21E282821EC00332E43 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F21C282821EC00332E43 /* Move.swift */; };
 		9734F220282821F600332E43 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F21F282821F600332E43 /* Matrix.swift */; };
 		9734F221282821F600332E43 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F21F282821F600332E43 /* Matrix.swift */; };
+		9734F2242828245400332E43 /* GridCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F2232828245400332E43 /* GridCellView.swift */; };
+		9734F2252828245400332E43 /* GridCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9734F2232828245400332E43 /* GridCellView.swift */; };
 		FB72F2CB282508DD00A7BF36 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = FB72F2CA282508DD00A7BF36 /* ComposableArchitecture */; };
 		FB72F2CE282508F000A7BF36 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = FB72F2CD282508F000A7BF36 /* ComposableArchitecture */; };
 		FBFE8EA5281EE6180071AB38 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFE8E95281EE6170071AB38 /* Main.swift */; };
@@ -30,10 +32,11 @@
 /* Begin PBXFileReference section */
 		9734F20C2828219900332E43 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		9734F211282821C200332E43 /* GridState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridState.swift; sourceTree = "<group>"; };
-		9734F214282821C600332E43 /* GridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCell.swift; sourceTree = "<group>"; };
+		9734F214282821C600332E43 /* GridCellState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCellState.swift; sourceTree = "<group>"; };
 		9734F217282821CB00332E43 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		9734F21C282821EC00332E43 /* Move.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
 		9734F21F282821F600332E43 /* Matrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
+		9734F2232828245400332E43 /* GridCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCellView.swift; sourceTree = "<group>"; };
 		FBFE8E95281EE6170071AB38 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		FBFE8E97281EE6180071AB38 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FBFE8E9C281EE6180071AB38 /* MineSweeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MineSweeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,8 +77,8 @@
 			isa = PBXGroup;
 			children = (
 				9734F211282821C200332E43 /* GridState.swift */,
-				9734F214282821C600332E43 /* GridCell.swift */,
 				9734F217282821CB00332E43 /* GridView.swift */,
+				9734F2222828244200332E43 /* GridCellFeature */,
 			);
 			path = GridFeature;
 			sourceTree = "<group>";
@@ -94,6 +97,15 @@
 				9734F21C282821EC00332E43 /* Move.swift */,
 			);
 			path = Movement;
+			sourceTree = "<group>";
+		};
+		9734F2222828244200332E43 /* GridCellFeature */ = {
+			isa = PBXGroup;
+			children = (
+				9734F214282821C600332E43 /* GridCellState.swift */,
+				9734F2232828245400332E43 /* GridCellView.swift */,
+			);
+			path = GridCellFeature;
 			sourceTree = "<group>";
 		};
 		FBFE8E8F281EE6170071AB38 = {
@@ -248,7 +260,8 @@
 				FBFE8EA5281EE6180071AB38 /* Main.swift in Sources */,
 				9734F218282821CB00332E43 /* GridView.swift in Sources */,
 				9734F21D282821EC00332E43 /* Move.swift in Sources */,
-				9734F215282821C600332E43 /* GridCell.swift in Sources */,
+				9734F2242828245400332E43 /* GridCellView.swift in Sources */,
+				9734F215282821C600332E43 /* GridCellState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,7 +275,8 @@
 				FBFE8EA6281EE6180071AB38 /* Main.swift in Sources */,
 				9734F219282821CB00332E43 /* GridView.swift in Sources */,
 				9734F21E282821EC00332E43 /* Move.swift in Sources */,
-				9734F216282821C600332E43 /* GridCell.swift in Sources */,
+				9734F2252828245400332E43 /* GridCellView.swift in Sources */,
+				9734F216282821C600332E43 /* GridCellState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
