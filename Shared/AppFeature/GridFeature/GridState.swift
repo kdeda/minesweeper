@@ -37,7 +37,7 @@ struct GridEnvironement {
   
   // Turn all cells gray, start at(0,0), turn corner cells yellow in coordinated fashion.
   func flipCorners(state: inout GridState, fps: Int = 6) -> Effect<GridCellState, Never> {
-    reset(state: &state) 
+    reset(state: &state)
     let publisher = state.cells.entries
       .flatMap { $0 }
       .compactMap { cell -> GridCellState? in
@@ -96,7 +96,9 @@ struct GridEnvironement {
     return publisher
   }
   
-  func cancelClockWise() -> Effect<GridAction, Never> { Effect.cancel(id: ClockWiseID()) }
+  func cancelClockWise() -> Effect<GridAction, Never> {
+    Effect.cancel(id: ClockWiseID())
+  }
 }
 
 extension GridState {
