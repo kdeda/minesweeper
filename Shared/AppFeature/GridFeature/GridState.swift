@@ -1,29 +1,24 @@
-//
-//  GridState.swift
-//  MineSweeper
-//
-//  Created by Klajd Deda on 5/6/22.
-//
-
-import Foundation
 import SwiftUI
 import ComposableArchitecture
 
 struct GridState: Equatable {
-    static var cellSize: CGFloat = 24
-
-    var clockWiseError = ""
-
-    var rows: Int { matrix.rows }
-    var columns: Int { matrix.columns }
-    var matrix: Matrix
-    var cells: [[GridCell]]
+    static var cellSize: CGFloat = 24.0
+    var fps = 20
+    var cells: Matrix<GridCell>
     
-    init(rows: Int = 3, columns: Int = 4) {
-        self.matrix = Matrix(rows, columns)
-        self.cells = matrix.map { row, column in
+    init(rows: Int = 3, cols: Int = 4) {
+        self.cells = Matrix(rows, cols) { row, column in
             GridCell(row: row, column: column)
         }
+        
+        // example of a map on Matrix
+        //      let foo = self.cells
+        //          .map { row, column in
+        //              [row, column]
+        //          }
+        //          .map { row, column in
+        //              GridCell(row: row, column: column)
+        //          }
     }
 }
 
@@ -43,110 +38,82 @@ struct GridEnvironement {
     var uuid: () -> UUID
     
     func reset(state: inout GridState) {
-        state.clockWiseError = ""
-        state.matrix.forEach { row, column in
-            state.cells[row][column].rotation = 0.0
-            state.cells[row][column].color = Color.gray
+        state.cells = state.cells.map { row, column in
+            GridCell(row: row, column: column)
         }
-        // or we could re-create the cells
-        //    state.cells = state.matrix.map { row, column in
-        //        GridCell(row: row, column: column)
-        //    }
     }
     
-    // 1) reset all to gray
-    // 2) flip the 4 corners
+    // Turn all cells gray, start at(0,0), turn corner cells yellow in coordinated fashion.
     func flipCorners(state: inout GridState, fps: Int = 6) -> Effect<GridCell, Never> {
         reset(state: &state)
-
-        let publisher = state.cells
+        let publisher = state.cells.entries
             .flatMap { $0 }
             .compactMap { cell -> GridCell? in
-                let cornerRow = cell.row == 0 || cell.row == state.rows - 1
-                let cornerColumn = cell.column == 0 || cell.column == state.columns - 1
-                
-                guard cornerRow && cornerColumn
-                else { return nil }
-                return cell
+                let cornerRow = cell.row == 0 || cell.row == state.cells.rows - 1
+                let cornerColumn = cell.column == 0 || cell.column == state.cells.cols - 1
+                return cornerRow && cornerColumn ? cell : nil
             }
             .publisher
             .zip(Effect.timer(id: FlipCornersID(), every: .seconds(1.0 / Double(fps)), on: mainQueue))
             .map { cell, _ -> GridCell in
-                var newValue = cell
-                
-                newValue.rotation += 90.0
-                newValue.color = Color.yellow
-                return newValue
+                GridCell(row: cell.row, column: cell.column, rotation: cell.rotation + 90.0, color: .yellow)
             }
             .eraseToAnyPublisher()
             .eraseToEffect()
         return publisher
     }
     
-    func cancelFlipCorners() -> Effect<GridAction, Never> {
-        Effect.cancel(id: FlipCornersID())
-    }
+    func cancelFlipCorners() -> Effect<GridAction, Never> { Effect.cancel(id: FlipCornersID()) }
     
-    // 1) reset all to gray
-    // 2) start at 0.0 and go clockwise
+    // Turn all cells gray, start at(0,0), move in clockwise fashion, turn visited cells yellow.
     func clockWise(state: inout GridState, fps: Int = 6) -> Effect<GridCell, Never> {
-        let rows = state.rows
-        let columns = state.columns
-        var currentMove = Move(minRows: 0, maxRows: rows, minColumns: 0, maxColumns: columns, row: 0, column: 0, direction: .right)
-        var orderedCells = [state.cells[currentMove.row][currentMove.column]]
+        
+        // Prepare to move.
+        var currentMove = Move(
+            minRows: 0, maxRows: state.cells.rows,
+            minColumns: 0, maxColumns: state.cells.cols,
+            row: 0, column: 0, direction: .right
+        )
+        var orderedCells = [state.cells.at(currentMove.row,currentMove.column)]
         var working = true
         
+        // Reset grid.
         reset(state: &state)
-        // this will take a jiffy
+        
+        // Move until complete.
         repeat {
             let newMove = currentMove.nextClockWiseMove
-            
-            if newMove.row == 2 && newMove.column == 1 {
-                // debug ...
-            }
-            if currentMove == newMove {
-                working = false
-            } else {
-                orderedCells.append(state.cells[newMove.row][newMove.column])
+            if currentMove == newMove { working = false }
+            else {
+                orderedCells.append(state.cells.at(newMove.row, newMove.column))
                 currentMove = newMove
             }
         } while working
         
-        if rows * columns != orderedCells.count {
-            state.clockWiseError = "expected: \(rows * columns) and got: \(orderedCells.count)"
-        }
-        // clockWiseError = "expected: \(rows * columns) and got: \(orderedCells.count)"
+        
+        // Animate.
         let publisher = orderedCells
             .publisher
             .zip(Effect.timer(id: ClockWiseID(), every: .seconds(1.0 / Double(fps)), on: mainQueue))
             .map { cell, _ -> GridCell in
-                var newValue = cell
-                
-                newValue.rotation += 90.0
-                newValue.color = Color.yellow
-                return newValue
+                GridCell(row: cell.row, column: cell.column, rotation: cell.rotation + 90.0, color: .yellow)
             }
             .eraseToAnyPublisher()
             .eraseToEffect()
         return publisher
     }
     
-    func cancelClockWise() -> Effect<GridAction, Never> {
-        Effect.cancel(id: ClockWiseID())
-    }
-
+    func cancelClockWise() -> Effect<GridAction, Never> { Effect.cancel(id: ClockWiseID()) }
 }
 
 extension GridState {
     static let reducer = Reducer<GridState, GridAction, GridEnvironement>.combine(
         Reducer { state, action, environment in
-            // Log4swift[Self.self].info("action: '\(action)'")
-            
             switch action {
             case .resetCells:
                 environment.reset(state: &state)
                 return .none
-
+                
             case .reset:
                 return .merge(
                     environment.cancelFlipCorners(),
@@ -159,7 +126,7 @@ extension GridState {
                     environment.cancelFlipCorners(),
                     environment.cancelClockWise(),
                     environment
-                        .flipCorners(state: &state, fps: 6)
+                        .flipCorners(state: &state, fps: state.fps)
                         .map(GridAction.updatedCell)
                 )
                 
@@ -167,14 +134,13 @@ extension GridState {
                 return .merge(
                     environment.cancelFlipCorners(),
                     environment.cancelClockWise(),
-                    environment.clockWise(state: &state, fps: 6)
+                    environment.clockWise(state: &state, fps: state.fps)
                         .map(GridAction.updatedCell)
                 )
-
+                
             case let .updatedCell(cell):
-                state.cells[cell.row][cell.column] = cell
+                state.cells.replaceAt(row: cell.row, col: cell.column, entry: cell)
                 return .none
-
             }
         }
     )
@@ -182,7 +148,7 @@ extension GridState {
 
 extension GridState {
     static let liveStore = Store<GridState, GridAction>(
-        initialState: .init(rows: 11, columns: 15),
+        initialState: .init(rows: 11, cols: 15),
         reducer: reducer,
         environment: GridEnvironement(
             mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
