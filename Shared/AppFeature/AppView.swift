@@ -3,7 +3,6 @@ import ComposableArchitecture
 
 struct AppView: View {
   let store: Store<GridState, GridAction>
-  @State var fps: Double = 20.0
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 1) {
@@ -41,17 +40,23 @@ struct AppView: View {
         
         VStack(spacing: 4) {
           HStack(spacing: 0) {
-            Text("Render frames per second: \(Int(fps))")
+            Text("Render frames per second: \(Int(viewStore.fps))")
           }
-          Slider(value: $fps, in: 3.0 ... 120.0, step: 3) { // TODO: Move this... bindable state...
-            Text("Label") // Where is this displayed ???
-          } minimumValueLabel: {
-            Image(systemName: "tortoise")
-          } maximumValueLabel: {
-            Image(systemName: "hare")
-          } onEditingChanged: {
-            print("\($0)")
-          }
+          Slider(
+            value: viewStore.binding(
+              get: { GridState in
+                GridState.fps
+              },
+              send: GridAction.updateFPS), // TODO: Where is this value coming from? Why don't have I have to give it a double?
+            in: 3.0 ... 120.0, step: 3) { // TODO: Move this... bindable state...
+              Text("Label") // Where is this displayed ???
+            } minimumValueLabel: {
+              Image(systemName: "tortoise")
+            } maximumValueLabel: {
+              Image(systemName: "hare")
+            } onEditingChanged: {
+              print("\($0)")
+            }
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 24)
