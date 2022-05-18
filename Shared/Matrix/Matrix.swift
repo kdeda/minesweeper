@@ -1,39 +1,44 @@
 import Foundation
 
-enum AppError: Error {
-    case runtimeError(String)
-}
-
 struct Matrix<T: Equatable>: Equatable {
-  private var entries: [[T]]
-  let rows: Int
-  let cols: Int
-  init(_ entries: [[T]]) throws {
-    if (entries.map { $0.count }.contains { $0 != entries[0].count }) {
-      throw AppError.runtimeError("Invalid matrix initialization")
+    public private(set) var entries: [[T]]
+    let rows: Int
+    let cols: Int
+    
+    init(_ rows: Int, _ cols: Int, _ transform: (_ row: Int, _ column: Int) -> (T)) {
+        self.rows = rows
+        self.cols = cols
+
+        self.entries = (0..<rows).map { row in
+            (0..<cols).map { col in
+                transform(row, col)
+            }
+        }
     }
-    self.rows = entries.count
-    self.cols = entries[0].count
-    self.entries = entries
-  }
-  func getEntries() -> [[T]] { entries }
-  mutating func replaceAt(row: Int, col: Int, entry: T) { entries[row][col] = entry }
-  func at(_ row: Int, _ col: Int) -> T { entries[row][col] }
+    
+    mutating func replaceAt(row: Int, col: Int, entry: T) { entries[row][col] = entry }
+    func at(_ row: Int, _ col: Int) -> T { entries[row][col] }
 }
 
 extension Matrix {
-  func forEach(_ transform: (_ row: Int, _ column: Int) -> ()) {
-    (0 ..< rows).forEach { row in
-      (0 ..< cols).forEach { col in
-        transform(row, col)
-      }
+    func forEach(_ transform: (_ row: Int, _ column: Int) -> Void) {
+        (0 ..< rows).forEach { row in
+            (0 ..< cols).forEach { col in
+                transform(row, col)
+            }
+        }
     }
-  }
-  func map<T>(_ transform: (_ row: Int, _ column: Int) -> (T)) -> [[T]] {
-    (0 ..< rows).map { row in
-      (0 ..< cols).map { col in
-        transform(row, col)
-      }
+    
+    func map<V>(_ transform: (_ row: Int, _ column: Int) -> (V)) -> Matrix<V> where V: Equatable {
+//        var entries: [[V]] = []
+//
+//        (0 ..< rows).map { row in
+//            var row = [V]
+//            (0 ..< cols).map { col in
+//                row.append(transform(row, col))
+//            }
+//            entries.append(row)
+//        }
+        return Matrix<V>(rows, cols, transform)
     }
-  }
 }
