@@ -77,7 +77,9 @@ struct GridEnvironement {
         // Move until complete.
         repeat {
             let newMove = currentMove.nextClockWiseMove
-            if currentMove == newMove { working = false }
+            if currentMove == newMove {
+                working = false
+            }
             else {
                 orderedCells.append(state.cells.at(newMove.row, newMove.column))
                 currentMove = newMove
