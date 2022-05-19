@@ -21,12 +21,30 @@ struct Move: Equatable {
 }
 
 extension Move {
-    var rowColumn: String { return String(format: "[%2d, %2d]", row, column)}
-    var debugString: String { return "\(rowColumn), direction: \(direction)" }
-    var canMoveRight: Bool { (column + 1) < maxColumns }
-    var canMoveLeft: Bool { (column - 1) >= minColumns }
-    var canMoveUp: Bool { (row - 1) > minRows }
-    var canMoveDown: Bool { (row + 1) < maxRows }
+    
+    var rowColumn: String {
+        return String(format: "[%2d, %2d]", row, column)
+    }
+    
+    var debugString: String {
+        return "\(rowColumn), direction: \(direction)"
+    }
+    
+    var canMoveRight: Bool {
+        (column + 1) < maxColumns
+    }
+    
+    var canMoveLeft: Bool {
+        (column - 1) >= minColumns
+    }
+    
+    var canMoveUp: Bool {
+        (row - 1) > minRows
+    }
+    
+    var canMoveDown: Bool {
+        (row + 1) < maxRows
+    }
     
     var inset: Move {
         var newMove = self
@@ -47,7 +65,9 @@ extension Move {
         var newMove = self
         switch direction {
         case .up:
-            if canMoveUp { newMove.row -= 1 }
+            if canMoveUp {
+                newMove.row -= 1
+            }
             else { // We came back to the top leading.
                 if minRows < maxRows {
                     newMove = newMove.inset
@@ -56,23 +76,31 @@ extension Move {
                     newMove.direction = .right
                     
                     // There is no room to go right.
-                    if newMove.column >= newMove.maxColumns { newMove = self }
+                    if newMove.column >= newMove.maxColumns {
+                        newMove = self
+                    }
                 }
             }
         case .down:
-            if canMoveDown { newMove.row += 1 }
+            if canMoveDown {
+                newMove.row += 1
+            }
             else if canMoveLeft {
                 newMove.direction = .left
                 newMove = newMove.nextClockWiseMove
             }
         case .left:
-            if canMoveLeft { newMove.column -= 1 }
+            if canMoveLeft {
+                newMove.column -= 1
+            }
             else if canMoveUp {
                 newMove.direction = .up
                 newMove = newMove.nextClockWiseMove
             }
         case .right:
-            if canMoveRight { newMove.column += 1 }
+            if canMoveRight {
+                newMove.column += 1
+            }
             else if canMoveDown {
                 newMove.direction = .down
                 newMove = newMove.nextClockWiseMove

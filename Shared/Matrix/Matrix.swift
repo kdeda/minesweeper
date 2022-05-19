@@ -8,7 +8,6 @@ struct Matrix<T: Equatable>: Equatable {
     init(_ rows: Int, _ cols: Int, _ transform: (_ row: Int, _ column: Int) -> (T)) {
         self.rows = rows
         self.cols = cols
-
         self.entries = (0..<rows).map { row in
             (0..<cols).map { col in
                 transform(row, col)
@@ -16,8 +15,30 @@ struct Matrix<T: Equatable>: Equatable {
         }
     }
     
-    mutating func replaceAt(row: Int, col: Int, entry: T) { entries[row][col] = entry }
-    func at(_ row: Int, _ col: Int) -> T { entries[row][col] }
+    private func indexIsValid(_ row: Int, _ col: Int) -> Bool {
+        row >= 0 && row < rows && col >= 0 && col  < cols
+    }
+    
+    subscript(_ row: Int, _ col: Int) -> T {
+        get {
+            assert(indexIsValid(row, col))
+            return entries[row][col]
+        }
+        set(newValue) {
+            assert(indexIsValid(row, col))
+            entries[row][col] = newValue
+        }
+    }
+    subscript(_ cell: GridCellState) -> T {
+        get {
+            assert(indexIsValid(cell.row, cell.col))
+            return entries[cell.row][cell.col]
+        }
+        set(newValue) {
+            assert(indexIsValid(cell.row, cell.col))
+            entries[cell.row][cell.col] = newValue
+        }
+    }
 }
 
 extension Matrix {
@@ -30,15 +51,6 @@ extension Matrix {
     }
     
     func map<V>(_ transform: (_ row: Int, _ column: Int) -> (V)) -> Matrix<V> where V: Equatable {
-//        var entries: [[V]] = []
-//
-//        (0 ..< rows).map { row in
-//            var row = [V]
-//            (0 ..< cols).map { col in
-//                row.append(transform(row, col))
-//            }
-//            entries.append(row)
-//        }
         return Matrix<V>(rows, cols, transform)
     }
 }
