@@ -4,7 +4,7 @@ struct Matrix<T: Equatable>: Equatable {
     public private(set) var entries: [[T]]
     let rows: Int
     let cols: Int
-
+    
     init(_ rows: Int, _ cols: Int, _ transform: (_ row: Int, _ column: Int) -> (T)) {
         self.rows = rows
         self.cols = cols
@@ -14,9 +14,9 @@ struct Matrix<T: Equatable>: Equatable {
             }
         }
     }
-
+    
     mutating func replaceAt(row: Int, col: Int, entry: T) { entries[row][col] = entry }
-  
+    
     func at(_ row: Int, _ col: Int) -> T { entries[row][col] }
 }
 
@@ -28,7 +28,7 @@ extension Matrix {
             }
         }
     }
-
+    
     func map<V>(_ transform: (_ row: Int, _ column: Int) -> (V)) -> Matrix<V> where V: Equatable {
         return Matrix<V>(rows, cols, transform)
     }

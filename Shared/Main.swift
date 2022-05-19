@@ -5,7 +5,7 @@ import ComposableArchitecture
 struct Main: App {
     var body: some Scene {
         WindowGroup {
-          AppView(store: GridState.liveStore)
+            AppView(store: GridState.liveStore)
         }
     }
 }
