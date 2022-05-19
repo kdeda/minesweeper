@@ -20,7 +20,7 @@ enum GridAction {
     case flipCorners
     case clockWise
     case updatedCell(GridCellState)
-    case cell(id: GridCellState.ID, action: GridCellAction)
+    case cell(row: Int, col: Int, action: GridCellAction)
     case updateFPS(Double)
 }
 
@@ -140,8 +140,7 @@ extension GridState {
                 state.cells[cell] = cell
                 return .none
                 
-                // TODO: Handle this.
-            case .cell(id: let id, action: let action):
+            case let .cell(row, col, action):
                 return .none
                 
             case let .updateFPS(newFPS):
