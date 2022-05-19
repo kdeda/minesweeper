@@ -15,7 +15,7 @@ struct Matrix<T: Equatable>: Equatable {
         }
     }
     
-    private func indexIsValid(_ row: Int, _ col: Int) -> Bool {
+    func indexIsValid(_ row: Int, _ col: Int) -> Bool {
         row >= 0 && row < rows && col >= 0 && col  < cols
     }
     
@@ -27,16 +27,6 @@ struct Matrix<T: Equatable>: Equatable {
         set(newValue) {
             assert(indexIsValid(row, col))
             entries[row][col] = newValue
-        }
-    }
-    subscript(_ cell: GridCellState) -> T {
-        get {
-            assert(indexIsValid(cell.row, cell.col))
-            return entries[cell.row][cell.col]
-        }
-        set(newValue) {
-            assert(indexIsValid(cell.row, cell.col))
-            entries[cell.row][cell.col] = newValue
         }
     }
 }

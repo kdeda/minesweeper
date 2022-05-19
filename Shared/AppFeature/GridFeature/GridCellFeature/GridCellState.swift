@@ -53,3 +53,14 @@ extension GridCellState {
         environment: GridCellEnvironment()
     )
 }
+
+extension Matrix where T == GridCellState {
+    subscript(_ cell: GridCellState) -> GridCellState {
+       get {
+           self[cell.row, cell.col]
+       }
+       set(newValue) {
+           self[cell.row, cell.col] = newValue
+       }
+    }
+}
