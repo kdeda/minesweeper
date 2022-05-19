@@ -9,7 +9,7 @@ struct GridState: Equatable {
     
     init(rows: Int = 3, cols: Int = 4) {
         self.cells = Matrix(rows, cols) { row, column in
-            GridCellState(row: row, column: column)
+            GridCellState(row: row, col: column)
         }
     }
 }
@@ -32,7 +32,7 @@ struct GridEnvironement {
     var uuid: () -> UUID
     
     func reset(state: inout GridState) { // TODO: Mutability is allowed here?
-        state.cells = state.cells.map { GridCellState(row: $0, column: $1) }
+        state.cells = state.cells.map { GridCellState(row: $0, col: $1) }
     }
     
     // Turn all cells gray, start at(0,0), turn corner cells yellow in coordinated fashion.
@@ -42,13 +42,13 @@ struct GridEnvironement {
             .flatMap { $0 }
             .compactMap { cell -> GridCellState? in
                 let cornerRow = cell.row == 0 || cell.row == state.cells.rows - 1
-                let cornerColumn = cell.column == 0 || cell.column == state.cells.cols - 1
+                let cornerColumn = cell.col == 0 || cell.col == state.cells.cols - 1
                 return cornerRow && cornerColumn ? cell : nil
             }
             .publisher
             .zip(Effect.timer(id: FlipCornersID(), every: .seconds(1.0 / Double(fps)), on: mainQueue))
             .map { cell, _ -> GridCellState in
-                GridCellState(row: cell.row, column: cell.column, rotation: cell.rotation + 90.0, color: .yellow)
+                GridCellState(row: cell.row, col: cell.col, rotation: cell.rotation + 90.0, color: .yellow)
             }
             .eraseToAnyPublisher()
             .eraseToEffect()
@@ -68,7 +68,7 @@ struct GridEnvironement {
             minColumns: 0, maxColumns: state.cells.cols,
             row: 0, column: 0, direction: .right
         )
-        var orderedCells = [state.cells.at(currentMove.row,currentMove.column)]
+        var orderedCells = [state.cells[currentMove.row,currentMove.column]]
         var working = true
         
         // Reset grid.
@@ -81,7 +81,7 @@ struct GridEnvironement {
                 working = false
             }
             else {
-                orderedCells.append(state.cells.at(newMove.row, newMove.column))
+                orderedCells.append(state.cells[newMove.row, newMove.column])
                 currentMove = newMove
             }
         } while working
@@ -91,7 +91,7 @@ struct GridEnvironement {
             .publisher
             .zip(Effect.timer(id: ClockWiseID(), every: .seconds(1.0 / Double(fps)), on: mainQueue))
             .map { cell, _ -> GridCellState in
-                GridCellState(row: cell.row, column: cell.column, rotation: cell.rotation + 90.0, color: .yellow)
+                GridCellState(row: cell.row, col: cell.col, rotation: cell.rotation + 90.0, color: .yellow)
             }
             .eraseToAnyPublisher()
             .eraseToEffect()
@@ -137,7 +137,7 @@ extension GridState {
                 )
                 
             case let .updatedCell(cell):
-                state.cells.replaceAt(row: cell.row, col: cell.column, entry: cell)
+                state.cells[cell] = cell
                 return .none
                 
                 // TODO: Handle this.

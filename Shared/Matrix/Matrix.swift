@@ -15,9 +15,30 @@ struct Matrix<T: Equatable>: Equatable {
         }
     }
     
-    mutating func replaceAt(row: Int, col: Int, entry: T) { entries[row][col] = entry }
+    private func indexIsValid(_ row: Int, _ col: Int) -> Bool {
+        row >= 0 && row < rows && col >= 0 && col  < cols
+    }
     
-    func at(_ row: Int, _ col: Int) -> T { entries[row][col] }
+    subscript(_ row: Int, _ col: Int) -> T {
+        get {
+            assert(indexIsValid(row, col))
+            return entries[row][col]
+        }
+        set(newValue) {
+            assert(indexIsValid(row, col))
+            entries[row][col] = newValue
+        }
+    }
+    subscript(_ cell: GridCellState) -> T {
+        get {
+            assert(indexIsValid(cell.row, cell.col))
+            return entries[cell.row][cell.col]
+        }
+        set(newValue) {
+            assert(indexIsValid(cell.row, cell.col))
+            entries[cell.row][cell.col] = newValue
+        }
+    }
 }
 
 extension Matrix {
